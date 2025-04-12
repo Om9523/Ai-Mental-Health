@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.secret_key = 'mindmood-secret-key'
 
 # Groq API Configuration
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "your api key"
 GROQ_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 MOOD_LOG = "data/mood_log.json"
