@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Relax Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        .game-container {
+            padding: 20px;
+        }
+        .game-container a {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .game-container a:hover {
+            background-color: #45a049;
+        }
+        .coloring-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            gap: 5px;
+            justify-content: center;
+        }
+        .coloring-grid div {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Choose a Relaxing Game</h1>
+    <div class="game-container">
+        <ul>
+            <li><a href="#coloring">Coloring</a></li>
+            <li><a href="#zen">Zen Garden</a></li>
+            <li><a href="#gradient">Color Gradient</a></li>
+            <li><a href="#breathing">Breathing</a></li>
+            <li><a href="#puzzle">Puzzle</a></li>
+            <li><a href="#memory">Memory Game</a></li>
+        </ul>
+    </div>
+
+    <div id="coloring" class="game-container">
+        <h2>Coloring Game</h2>
+        <p>Click a box to color it. (Static placeholder)</p>
+        <div class="coloring-grid">
+            <div onclick="this.style.background='red'"></div>
+            <div onclick="this.style.background='green'"></div>
+            <div onclick="this.style.background='blue'"></div>
+            <div onclick="this.style.background='yellow'"></div>
+            <div onclick="this.style.background='orange'"></div>
+            <div onclick="this.style.background='red'"></div>
+            <div onclick="this.style.background='green'"></div>
+            <div onclick="this.style.background='blue'"></div>
+            <div onclick="this.style.background='yellow'"></div>
+            <div onclick="this.style.background='orange'"></div>
+            <div onclick="this.style.background='red'"></div>
+            <div onclick="this.style.background='green'"></div>
+            <div onclick="this.style.background='blue'"></div>
+            <div onclick="this.style.background='yellow'"></div>
+            <div onclick="this.style.background='orange'"></div>
+            <div onclick="this.style.background='red'"></div>
+            <div onclick="this.style.background='green'"></div>
+            <div onclick="this.style.background='blue'"></div>
+            <div onclick="this.style.background='yellow'"></div>
+            <div onclick="this.style.background='orange'"></div>
+            <div onclick="this.style.background='red'"></div>
+            <div onclick="this.style.background='green'"></div>
+            <div onclick="this.style.background='blue'"></div>
+            <div onclick="this.style.background='yellow'"></div>
+            <div onclick="this.style.background='orange'"></div>
+        </div>
+        <a href="#">Back</a>
+    </div>
+
+    <div id="zen" class="game-container">
+        <h2>Zen Sand Garden</h2>
+        <p>Drag your mouse to draw in the sand. (Simulated)</p>
+        <canvas id="zenCanvas" width="400" height="400"></canvas>
+        <script>
+            const zenCanvas = document.getElementById('zenCanvas');
+            const ctx = zenCanvas.getContext('2d');
+            zenCanvas.onmousemove = function(e) {
+                if (e.buttons === 1) {
+                    ctx.fillStyle = 'tan';
+                    ctx.beginPath();
+                    ctx.arc(e.offsetX, e.offsetY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        </script>
+        <a href="#">Back</a>
+    </div>
+
+    <div id="gradient" class="game-container">
+        <h2>Color Gradient Game</h2>
+        <p>Arrange the colors. (Simplified)</p>
+        <p>This is a placeholder; implement logic with drag and drop for full game.</p>
+        <a href="#">Back</a>
+    </div>
+
+    <div id="breathing" class="game-container">
+        <h2>Breathing Exercise</h2>
+        <p>Follow the circle as it grows and shrinks</p>
+        <canvas id="breatheCanvas" width="300" height="300"></canvas>
+        <script>
+            const breatheCanvas = document.getElementById('breatheCanvas');
+            const ctx2 = breatheCanvas.getContext('2d');
+            let radius = 20, growing = true;
+            function draw() {
+                ctx2.clearRect(0, 0, 300, 300);
+                ctx2.beginPath();
+                ctx2.arc(150, 150, radius, 0, 2 * Math.PI);
+                ctx2.fillStyle = 'skyblue';
+                ctx2.fill();
+                growing ? radius += 1 : radius -= 1;
+                if (radius > 100 || radius < 20) growing = !growing;
+                requestAnimationFrame(draw);
+            }
+            draw();
+        </script>
+        <a href="#">Back</a>
+    </div>
+
+    <div id="puzzle" class="game-container">
+        <h2>Puzzle Game</h2>
+        <p>Basic puzzle placeholder - replace with drag-and-drop image puzzle for full version.</p>
+        <a href="#">Back</a>
+    </div>
+
+    <div id="memory" class="game-container">
+        <h2>Memory Game</h2>
+        <p>Click cards to match pairs. (Simplified static)</p>
+        <p>This is a placeholder for a JS-based memory game.</p>
+        <a href="#">Back</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MindMood AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e6ccff, #ccffff);
+      margin: 0;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: row-reverse; /* Chat on right, video on left */
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .chat-container {
+      flex: 1 1 400px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      max-width: 500px;
+    }
+
+    .chat-box {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f9f9f9;
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-message {
+      margin: 8px 0;
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 15px;
+      font-size: 15px;
+      line-height: 1.4;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .chat-message.user {
+      background-color: #d9efff;
+      color: #003366;
+      align-self: flex-end;
+      text-align: right;
+      border: 2px solid #66aaff;
+      border-bottom-right-radius: 0;
+    }
+
+    .chat-message.bot {
+      background-color: #f0e6ff;
+      color: #4b0082;
+      align-self: flex-start;
+      text-align: left;
+      border: 2px solid #bb99ff;
+      border-bottom-left-radius: 0;
+    }
+
+    .sender {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      font-size: 15px;
+    }
+
+    .input-row button {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      background-color: #4b0082;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .input-row button:hover {
+      background-color: #35005c;
+    }
+
+    .video-section {
+      flex: 1 1 480px;
+      text-align: center;
+      max-width: 540px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    #video {
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+      border: 5px solid #888;
+      border-radius: 12px;
+    }
+
+    #toggleCameraBtn, #captureBtn {
+      background: #4b0082;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin: 10px 5px;
+      font-size: 15px;
+    }
+
+    #toggleCameraBtn:hover, #captureBtn:hover {
+      background-color: #35005c;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column-reverse;
+        align-items: center;
+      }
+
+      .chat-container, .video-section {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .chat-box {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>MindMood: AI Wellness Assistant</h1>
+
+  <div class="main-container">
+    <!-- Chatbot Section (Right on desktop) -->
+    <div class="chat-container">
+      <div id="chatBox" class="chat-box">
+        <div class="chat-message bot">
+          <span class="sender">AI:</span>
+          💡 I'm here for you. How are you feeling today?
+        </div>
+      </div>
+      <div class="input-row">
+        <input type="text" id="feelingInput" placeholder="Type how you're feeling...">
+        <button onclick="sendFeeling()">Send</button>
+      </div>
+    </div>
+
+    <!-- Video Section (Left on desktop) -->
+    <div class="video-section">
+      <video id="video" autoplay playsinline></video><br>
+      <button id="toggleCameraBtn">📷 Toggle</button>
+      <button id="captureBtn">🎯 Capture</button>
+      <div id="status">Camera initializing...</div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const statusDiv = document.getElementById('status');
+    const chatBox = document.getElementById('chatBox');
+    const feelingInput = document.getElementById('feelingInput');
+    let stream = null;
+    let cameraOn = true;
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        statusDiv.textContent = "Camera ready. Click 'Capture' to analyze.";
+      } catch (err) {
+        statusDiv.textContent = "Camera access denied.";
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        statusDiv.textContent = "Camera off.";
+      }
+    }
+
+    document.getElementById('toggleCameraBtn').onclick = () => {
+      cameraOn = !cameraOn;
+      cameraOn ? startCamera() : stopCamera();
+    };
+
+    document.getElementById('captureBtn').onclick = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const imageBase64 = canvas.toDataURL('image/jpeg');
+
+      statusDiv.textContent = "Analyzing your emotion...";
+
+      fetch('/analyze_expression', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageBase64 })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          statusDiv.textContent = "Error: " + data.error;
+        } else {
+          statusDiv.textContent = `Detected Emotion: ${data.emotion}`;
+          addChatMessage("bot", `💡 AI Suggestion: ${data.message}`);
+        }
+      })
+      .catch(() => {
+        statusDiv.textContent = "Failed to analyze.";
+      });
+    };
+
+    function sendFeeling() {
+      const feeling = feelingInput.value.trim();
+      if (!feeling) return;
+
+      addChatMessage("user", feeling);
+      feelingInput.value = "";
+
+      fetch('/analyze_expression', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ feeling: feeling })
+      })
+      .then(res => res.json())
+      .then(data => {
+        addChatMessage("bot", `💡 AI Suggestion: ${data.message}`);
+      });
+    }
+
+    function addChatMessage(role, text) {
+      const div = document.createElement('div');
+      div.className = `chat-message ${role}`;
+
+      const sender = document.createElement('span');
+      sender.className = 'sender';
+      sender.textContent = role === 'user' ? 'You:' : 'AI:';
+
+      const message = document.createElement('span');
+      message.textContent = text;
+
+      div.appendChild(sender);
+      div.appendChild(message);
+
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    startCamera();
+  </script>
+</body>
+</html>
